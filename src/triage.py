@@ -110,12 +110,19 @@ Use three levels:
   work depending on the answer.
 
 Do not infer complexity from length or vocabulary density. A short, plainly
-stated enquiry can be complex (because the actual blocker is buried
-underneath the framing the client is reaching for), and a long, detailed
-one can be simple (a client who has already scoped their own request
-thoroughly). Do not equate "the client called it quick or simple" with
-actual complexity - weigh what their own stated context implies against
-what they are asking for, and say so in your rationale if the two disagree.
+stated enquiry can be complex, and a long, detailed one can be simple (a
+client who has already scoped their own request thoroughly).
+
+Most enquiries are exactly what they look like - default to trusting the
+client's own stated scope. Only override it when something SPECIFIC in
+their own stated context actively contradicts it (e.g. they call a request
+"quick" while also describing a merger that left the underlying data a
+mess, or an unresolved internal disagreement, or a dependency on another
+unfinished problem). A request being short, or the client using the word
+"simple", is not by itself contradicting evidence - it is what most simple
+requests actually look like. Calling a genuinely bounded request "complex"
+just to be safe is its own real error: it wastes the lead's time sizing a
+discovery engagement for what should have been a five-minute call.
 
 Give a rationale a lead could use to decide whether to trust your estimate:
 name the specific thing that makes this bounded or open-ended, not just a
@@ -134,9 +141,18 @@ Sign off (sign_off: true) only if, reading the original enquiry text fresh:
 - the proposed service line(s) are actually supported by what the client
   wrote, not just plausible;
 - the complexity estimate reflects real signal in the text, not just
-  restated length or vocabulary;
-- the routing shortlist's rationale is consistent with the proposed service
-  line and with what the enquiry actually describes needing.
+  restated length or vocabulary.
+
+IMPORTANT: your sign-off decision must NEVER be based on how good the
+routing shortlist looks. A human analyst always makes the final call on
+exactly which person handles the enquiry, no matter how strong or weak the
+shortlist's rationale is - that is true by design, not a fallback for when
+the shortlist looks shaky. A shortlist that is uninformative, or says no
+specialty matched, is the routing step working correctly and telling the
+truth about its own uncertainty; it is not a defect and must never be a
+reason to withhold the rest of the draft from the human. If something about
+the shortlist seems worth a human's attention, mention it in your reason,
+but it must not affect sign_off or abstain_trigger.
 
 Do not sign off (sign_off: false), and set abstain_trigger, when:
 - "low_confidence": the draft looks like a reasonable guess but the
