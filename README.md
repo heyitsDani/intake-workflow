@@ -1,9 +1,12 @@
+## Repository Structure
+
 intake-triage-agent/
 ├── CLAUDE.md              # standing context, auto-loaded every session
 ├── README.md              # this file
 ├── docs/
 │   ├── brief.pdf
 │   ├── brief.md
+│   ├── ARCHITECTURE.md    # one diagram + notes: data flow, integration, day-one instrumentation
 │   └── DECISIONS.md       # running decisions log - what was chosen, rejected, why
 ├── data/
 │   ├── generate.py        # synthetic data generator
