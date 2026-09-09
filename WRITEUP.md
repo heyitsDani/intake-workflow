@@ -28,6 +28,13 @@ warning sign of that, and nothing currently automates the comparison.
   small ambiguous/underspecified/out-of-scope tail) and what actually
   arrives - a shift toward more ambiguous or out-of-scope traffic changes
   what an acceptable abstain rate even looks like.
+- Run-to-run stability on the genuinely borderline cases specifically.
+  Running the identical pipeline twice, the hardest record in the golden
+  set (a deliberate coin-flip between two service lines) abstained
+  correctly once and answered confidently and wrongly the next time, from
+  the same input - real LLM sampling variance, not a code bug. Any single
+  accuracy number from a run this small should be read as one sample, not
+  a fixed truth.
 
 **Fallback when the model gets it wrong:**
 - Service line and complexity are gated by the verifier. Below sign-off, the
