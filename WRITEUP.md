@@ -1,5 +1,10 @@
 # Intake Triage Agent - Write-up
 
+Pipeline in one line: two classifier calls draft service line and
+complexity independently, a verifier call gates those drafts (sign-off or
+abstain), and routing - rules, not a model - emits a 1-2 lead shortlist
+with rationale for a human to pick from.
+
 **What breaks first in production:** silent misrouting. A wrong decision
 raises no error - the enquiry just sits in the wrong lead's queue until a
 person notices, days later or never. Second, the routing shortlist is
@@ -10,7 +15,10 @@ measured entirely on synthetic data, so the first weeks of production are
 the real eval. I would dual-run it alongside the analyst rather than
 replace them, until the correction loop below has produced enough labels
 to know the true error rate - the same reason docs/DECISIONS.md refuses
-to claim improvement over an unmeasured baseline.
+to claim improvement over an unmeasured baseline. After dual-run ends,
+sampled human review continues on a fixed share of signed-off decisions,
+ratcheted down only as override data justifies it - never straight from
+full review to none.
 
 **What to monitor:**
 - Abstain rate, split by trigger (`low_confidence` vs `above_authority`).
@@ -41,8 +49,8 @@ to claim improvement over an unmeasured baseline.
   state never appear on the form and no model should guess them.
 - Every decision is logged whole to `decisions.jsonl` with a reserved
   `correction` field, so a team lead's reassignment becomes a free
-  training label joined to the original decision. Wiring that loop is the
-  single most important next step, ahead of any accuracy work.
+  ground-truth label joined to the original decision. Wiring that loop is
+  the single most important next step, ahead of any accuracy work.
 
 Measured results: `evals/RESULTS.md`. Full reasoning and every rejected
 alternative: `docs/DECISIONS.md`.
