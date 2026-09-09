@@ -1,8 +1,10 @@
 # Eval results
 
-Two runs of `python -m evals.run_eval` against the 31-record golden set,
-identical code, back to back. Reported as a range rather than one number -
-see "why a range" below.
+Three full live runs against the 31-record golden set. The first ran the
+original prompts and exposed two bugs (details below); runs A and B ran
+the fixed prompts, identical code, back to back. Only A and B are
+comparable, so they are the headline table - reported as a range rather
+than one number, see "why a range" below.
 
 | metric | run A | run B |
 |---|---|---|
@@ -15,6 +17,23 @@ see "why a range" below.
 
 (One record per run failed on a malformed API response, unrelated to the
 code - excluded from both runs' numbers, not silently guessed.)
+
+## The first run (before the prompt fixes)
+
+For the record, the pre-fix run's numbers: abstain recall 4/4, abstain
+precision 4/11, service_line 100%, complexity 65%, routing top-1 90%,
+shortlist recall 100% - but on only 20 graded records, not 24.
+
+These are NOT better numbers, despite appearances, and they are not
+comparable to the table above. The buggy verifier abstained on 7 records
+it should have answered, and some of those withheld drafts contained
+wrong service-line answers - so the wrong answers were hidden from
+grading instead of counted. When the fix made the system commit to
+answers on those records, the hidden mistakes became visible and gradeable
+(e.g. ENQ-0037's wrong Strategy & Advisory call, present in every run,
+only shows up as a scored miss post-fix). Same underlying behaviour,
+honestly measured this time. That first run's real output was finding the
+two bugs - see docs/DECISIONS.md for both fixes.
 
 ## Why a range, not a single number
 
