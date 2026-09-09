@@ -1,0 +1,77 @@
+# Security & Credentials
+.env
+.env.*
+*.pem
+*.key
+credentials.json
+secrets.yaml
+
+# Python & Virtual Environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.venv/
+env/
+ENV/
+
+# IDEs & OS Files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# AI/ML Model Weights & Artifacts (Store in S3/Artifact Registry, not Git)
+*.bin
+*.safetensors
+*.pt
+*.pth
+*.h5
+*.onnx
+*.gguf
+*.ggml
+models/
+checkpoints/
+
+# Local Vector Databases & Caches
+.chroma/
+faiss_index/
+vector_store/
+*.db
+*.sqlite
+*.sqlite3
+
+# Generated data artifacts only - not a blanket data/ or *.jsonl rule, which would
+# also hide data/generate.py (source) and evals/golden.jsonl (hand-labelled ground
+# truth) from git. Both of those are tracked deliberately.
+data/enquiries.jsonl
+data/decisions.jsonl
+*.csv
+*.parquet
+
+# ML Experiment Tracking & Caching
+.cache/
+huggingface/
+wandb/
+mlruns/
+.tensorboard/
