@@ -96,6 +96,56 @@ system ever acting alone, but a rule that's stale or too narrow will silently pr
 worse shortlist, not an error - this is the same "silent misroute" risk as the rest of
 the system, one level down.
 
+**2026-09-08 - Corrected the verifier prompt after the first live eval run exposed the
+predicted per-stage-attribution tradeoff actually happening.** Original prompt made
+sign_off depend on all three drafts, including whether the routing shortlist's keyword
+match looked strong. In the first full run, 4 of 11 system abstains had the verifier
+say, in its own words, that service_line and complexity were sound but the routing
+shortlist was weak, and abstain the whole decision anyway - discarding two correct
+answers because of a third field that was never going to be acted on autonomously in
+the first place (a human always confirms the specific lead regardless of shortlist
+confidence). Fixed by removing routing-shortlist quality from the sign-off criteria
+entirely; it may still appear in the verifier's `reason` text but can no longer flip
+`sign_off` or set `abstain_trigger`. This also fixed the "routing implies ERP work the
+text never mentions" cross-stage-inconsistency example from the original entry above -
+on inspection that scenario cannot actually occur, since the routing shortlist is
+mechanically generated from whatever service_line the model just proposed, so it can
+never disagree with it. Rejected: leaving the gate in place and just documenting it as
+a limitation - the first live run showed it was not a rare edge case (4 of 27 gradeable
+records, ~15%), so it was worth fixing before treating any accuracy number as final.
+
+**2026-09-08 - Corrected the complexity prompt's "don't trust the client's framing"
+guidance after the first live eval run showed a one-directional bias.** Every
+complexity miss in the first full run (8 of 8) was the model rating HIGHER than golden,
+never lower - a systematic tendency to call things complex, not a random spread of
+errors. Root cause: the original prompt spent real estate warning the model not to be
+fooled by a client's stated "simple" framing (written with ENQ-0037 specifically in
+mind), and the model generalized that warning to be suspicious of every enquiry, not
+just the ones where the client's own stated context actually contradicted their framing.
+Rewrote the guidance to say the reverse as the default: most enquiries are what they
+look like, and stated scope should only be overridden when something specific in the
+client's own words contradicts it, not merely because a request is short or uses the
+word "simple". Named calling a genuinely bounded request "complex" as a real cost (it
+wastes a lead's time sizing a discovery engagement for a five-minute call), so the
+prompt is not just "trust the client" but "match the estimate to the actual evidence in
+either direction."
+
+**2026-09-08 - Found real run-to-run variance in the live eval, most visibly on the
+verifier's abstain decision for the hardest record.** Ran the identical pipeline twice
+after the prompt fixes above. `ENQ-0036` (the new "genuine coin-flip, should abstain"
+record) correctly abstained on one run and confidently answered "Technology & Data" on
+the other, from the exact same input. Headline numbers also moved between the two runs
+(service_line 92% -> 88%, complexity 71% -> 75%, routing top-1 83% -> 79%) purely from
+API sampling variance, no code changes between them. Not treating either run's numbers
+as ground truth; reporting the range instead. This is the concrete, observed version of
+a risk named only in the abstract in the self-reported-confidence discussion earlier:
+a single verifier call is one sample from a distribution, and on genuinely borderline
+cases that distribution has real spread. The self-consistency ensemble option rejected
+earlier (run N times, abstain on disagreement) is the direct fix for exactly this
+failure mode - not pursued now because 31 golden records is too small a set to justify
+tuning further against, and because the variance itself is useful, honest information
+for the panel rather than something to paper over with a bigger prompt-engineering pass.
+
 **2026-09-08 - Model choice: use the strongest available model for every call.**
 At ~2,600 calls/year the price difference between model tiers is noise. Accuracy on the
 subtle traps the golden set is built to catch (vocabulary-discipline cases like
