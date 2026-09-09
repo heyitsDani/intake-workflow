@@ -1,56 +1,48 @@
 # Intake Triage Agent - Write-up
 
-**What breaks first in production:** silent misrouting. Nothing in this
-system raises an error when it routes wrong - a misclassified enquiry sits
-in the wrong lead's queue until someone downstream notices, which may be
-days later or never. The routing shortlist is also brittle to phrasing
-outside its keyword table: it degrades to an uninformative full-line
-shortlist rather than a confident wrong answer, which is a safer failure
-mode, but a stale roster (a lead leaves, a specialty shifts) will silently
-produce a worse shortlist with no signal that it happened. Third: both the
-demo corpus and the eval's own generator are templated text, and the golden
-set is hand-written specifically as a guard against overfitting to that
-template's sentence structure - a large gap between accuracy on
-`data/enquiries.jsonl` and on `evals/golden.jsonl` would be the first real
-warning sign of that, and nothing currently automates the comparison.
+**What breaks first in production:** silent misrouting. A wrong decision
+raises no error - the enquiry just sits in the wrong lead's queue until a
+person notices, days later or never. Second, the routing shortlist is
+keyword-based, so a stale roster (a lead leaves, a specialty shifts)
+degrades it silently: no error, just quietly worse shortlists. Third, and
+most bluntly: this system has never seen a real enquiry. It was built and
+measured entirely on synthetic data, so the first weeks of production are
+the real eval. I would dual-run it alongside the analyst rather than
+replace them, until the correction loop below has produced enough labels
+to know the true error rate - the same reason docs/DECISIONS.md refuses
+to claim improvement over an unmeasured baseline.
 
 **What to monitor:**
-- Abstain rate over time, split by trigger (`low_confidence` vs
-  `above_authority`). A sudden drop usually means the verifier has become
-  overconfident, not that enquiries got easier.
-- The verifier's sign-off rate against actual human overrides, once the
-  correction loop below exists - this is the real calibration check, and it
-  does not exist yet.
-- Routing shortlist recall specifically, tracked apart from service-line and
-  complexity accuracy, since it degrades independently and for a different
-  reason (a stale keyword table vs. a genuinely hard case).
-- Drift between the corpus's assumed distribution (mostly clear, with a
-  small ambiguous/underspecified/out-of-scope tail) and what actually
-  arrives - a shift toward more ambiguous or out-of-scope traffic changes
-  what an acceptable abstain rate even looks like.
-- Run-to-run stability on the genuinely borderline cases specifically.
-  Running the identical pipeline twice, the hardest record in the golden
-  set (a deliberate coin-flip between two service lines) abstained
-  correctly once and answered confidently and wrongly the next time, from
-  the same input - real LLM sampling variance, not a code bug. Any single
-  accuracy number from a run this small should be read as one sample, not
-  a fixed truth.
+- Abstain rate, split by trigger (`low_confidence` vs `above_authority`).
+  A sudden drop usually means the verifier got overconfident, not that
+  enquiries got easier.
+- How often the analyst's final routing pick falls outside the system's
+  shortlist. No ground-truth labels needed - the human's pick is the label.
+- Human corrections to service line and complexity, joined back to the
+  original decision via the correction field. This is the real calibration
+  check on the verifier's sign-offs, and it does not exist until that loop
+  is wired.
+- Distribution drift: the share of clear vs ambiguous vs out-of-scope
+  traffic in the decision log. A shift changes what a healthy abstain rate
+  even looks like.
+- Decision stability on near-duplicate resubmissions. Live testing showed
+  real run-to-run variance on borderline cases (evals/RESULTS.md): the
+  same enquiry can abstain one run and get a confident answer the next.
+  Duplicates arriving days apart are a free consistency probe.
 
 **Fallback when the model gets it wrong:**
-- Service line and complexity are gated by the verifier. Below sign-off, the
-  enquiry goes to a human with the draft still visible and clearly marked
-  unreliable, not blank - the system's best guess is worth showing even when
-  it should not be trusted outright.
-- Routing is never autonomous, by design, regardless of how confident the
-  earlier stages were: the system always hands a human a shortlist of 1-2
-  candidate leads with rationale, and the human makes the final call. This
-  is the one stage where the fallback is the default behaviour, because
-  capacity and prior-relationship state never appear on the form and no
-  model can be trusted to guess them.
-- The `TriageDecision` schema reserves a `correction` field so a human
-  reassignment can be logged back against the original decision. That
-  correction signal is the actual ground truth a real deployment needs, and
-  wiring it up is the single most important next step, ahead of any
-  accuracy improvement to the pipeline itself.
+- Service line and complexity are gated by a verifier call. Below
+  sign-off, the enquiry goes to a human with the draft still visible and
+  clearly marked unreliable, not blank - the best guess is worth showing
+  even when it should not be trusted outright.
+- Routing is never autonomous, by design, regardless of confidence: the
+  system always hands a human a 1-2 lead shortlist with rationale, and the
+  human makes the final call, because capacity and prior-relationship
+  state never appear on the form and no model should guess them.
+- Every decision is logged whole to `decisions.jsonl` with a reserved
+  `correction` field, so a team lead's reassignment becomes a free
+  training label joined to the original decision. Wiring that loop is the
+  single most important next step, ahead of any accuracy work.
 
-Full reasoning and every rejected alternative: `docs/DECISIONS.md`.
+Measured results: `evals/RESULTS.md`. Full reasoning and every rejected
+alternative: `docs/DECISIONS.md`.
