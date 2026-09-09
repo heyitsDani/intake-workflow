@@ -20,8 +20,9 @@ intake-triage-agent/
 │   └── triage.py          # the pipeline: service_line, complexity, routing, verifier
 ├── evals/
 │   ├── golden.jsonl       # hand-labelled answer key, 31 cases
-│   └── run_eval.py
-└── WRITEUP.md             # the half-page deliverable
+│   ├── run_eval.py
+│   └── RESULTS.md         # two-run eval numbers, reported as a range
+└── WRITEUP.md             # the write-up deliverable
 
 ## Setup
 
@@ -40,13 +41,13 @@ ANTHROPIC_API_KEY=sk-ant-...
 Regenerate the synthetic, unlabelled demo corpus:
 
 ```
-python data/generate.py
+uv run python data/generate.py
 ```
 
 Run the eval against the hand-labelled golden set:
 
 ```
-python -m evals.run_eval
+uv run python -m evals.run_eval
 ```
 
 (Run as a module, not a script, so `src` resolves as a sibling package

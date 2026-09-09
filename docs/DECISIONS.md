@@ -210,6 +210,20 @@ stated (simple) framing and the true complexity implied by their own stated cont
 Rejected: a broader rework of the 15 archetypes - the existing set already clears the
 bar the brief sets; only the one identified bias was worth the time before code.
 
+**2026-09-08 - Disclosure on the two added golden records (ENQ-0036, ENQ-0037): drafted
+with the AI assistant, reviewed and approved by me - and yes, that is in tension with
+the "not model-generated" rule above.** The distinction I am relying on: the rejected
+practice was asking a model to LABEL existing enquiries, which makes the eval measure
+agreement with the model rather than correctness. These two records were instead
+authored adversarially - designed specifically to catch failure modes the classifier
+was suspected of having - with the labels set by design intent, not by asking a model
+what it thinks the answer is. The empirical check that the shared-phrasing-prior worry
+did not materialise: the classifier (same model family as the author) FAILED both
+records on multiple live runs - ENQ-0036 got a confident wrong answer instead of
+abstaining on one run of two, and ENQ-0037 was misclassified as Strategy & Advisory on
+every run. If shared priors were inflating agreement, the model would pass the cases it
+wrote. It did not.
+
 **2026-09-08 - Fixed a real bug found while adding to the golden set: ENQ-0007 was
 pretty-printed across 20 physical lines, breaking one-record-per-line JSONL parsing.**
 Reformatted to a single line, matching every other record; content unchanged. Caught
