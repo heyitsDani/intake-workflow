@@ -1,5 +1,13 @@
+# Intake Triage Agent
+
+A prototype that classifies inbound client enquiries, estimates their
+complexity, and proposes a routing shortlist - with the ability to abstain
+and hand the decision to a human. Built for a stated volume of 40-60
+enquiries/week; see "Why it stops here" below.
+
 ## Repository Structure
 
+```
 intake-triage-agent/
 ├── CLAUDE.md              # standing context, auto-loaded every session
 ├── README.md              # this file
@@ -23,6 +31,7 @@ intake-triage-agent/
 │   ├── run_eval.py
 │   └── RESULTS.md         # two-run eval numbers, reported as a range
 └── WRITEUP.md             # the write-up deliverable
+```
 
 ## Setup
 
